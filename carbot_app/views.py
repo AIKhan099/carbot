@@ -31,11 +31,16 @@ def formdata(request):
         minutes = int(request.POST.get('minutes'))
         print(hours, minutes )
         time.sleep(minutes*1 + hours*60*60)
-        res=carbotfun.carbot(email=email, password=password_,link=link_).findingtime()
-        print(res)
-        if res == 2:
-            return HttpResponse('This page is not accessible')
-        else:
-            return HttpResponse('page is accessible')
+
+        try:
+            res, title=carbotfun.carbot(email=email, password=password_,link=link_).findingtime()
+            print("In formdata function, res is", res,"title is ", title)
+            if res == 2:
+                return HttpResponse('Auction has not been started for the requested page with title: ' + title)
+            else:
+                return HttpResponse('Auction has  been started for the requested page with title:' + title)
+        except:
+            xx=carbotfun.carbot(email=email, password=password_,link=link_).findingtime()
+            return HttpResponse('In except, Action has not been started for the requested page with title: '+xx)
 
         # return HttpResponse('Hours and minutes are : '  )

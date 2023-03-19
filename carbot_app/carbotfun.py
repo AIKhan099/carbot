@@ -17,9 +17,10 @@ from pathlib import Path
 from django.http.response import HttpResponse
 from . import views
 class carbot():
-    def __init__(self, email, password, link):
+    def __init__(self, email, password, link, bid_price):
         self.email = email
         self.password = password
+        self.bid_price = bid_price
         self.link = link
         self.getbrowser()
         self.login()
@@ -50,7 +51,7 @@ class carbot():
         print("getting browser")
         # options = Options()
         options = webdriver.ChromeOptions()
-        # options.add_argument('--headless')
+        options.add_argument('--headless')
         options.add_argument("--incognito")
         options.add_argument("--nogpu")
         options.add_argument("--disable-gpu")
@@ -116,33 +117,19 @@ class carbot():
             self.browser.quit()
             print("browser quit")
 
-    # def findingtime(self):
-    #     # time_ = self.browser.find_element(By.XPATH, "//div[@class='timer']").text
-    #     # print(time_)
-    # #     document.getElementsByClassName("circleTimer")['item']
-    #     try:
+    def biding(self):
+        print("In bidding nows")
+        # clicking the bid price
+        self.browser.find_element(By.XPATH, '//div[@class="price text"]').click()
+        time.sleep(3)
+        self.browser.find_element(By.XPATH,"//div[contains(text(), 'I Agree')]").click()
+        time.sleep(5)
+        print('clicked on bidding')
+    def pricevaluemaker(self, raw_price_str):
+        list_=list_= [i for i in raw_price_str if i.isdigit()]
+        price = int("".join(list_))
 
-    #         time.sleep(30)
-    #         sub=self.browser.execute_script("document.getElementsByClassName('mainCurrency')[0].textContent");
-    #         print(sub)
-    #         self.browser.quit()
-    #         if sub:
-    #             print('done'*100)
-
-
-    #         else:
-    #             print('not found')
-
-
-    #     except:
-    #         print('not found except ')
-    #         page=2
-    #         self.browser.quit()
-
-    #         return page
-
-        # finally:
-        #     self.browser.quit()
+        return price
 
     def findingtime(self):
         # time_ = self.browser.find_element(By.XPATH, "//div[@class='timer']").text
@@ -157,33 +144,62 @@ class carbot():
                     print("trying to get value : ", getting_value)
                     sub=self.browser.execute_script("document.getElementsByClassName('mainCurrency')[0].textContent");
                     print("This is sub : ",  sub)
+                    # if currency is mentioned
                     if sub:
+                        # as we have currency, no need for while loop anymore
                         getting_value =5
+
+                        # extracting price and converting to int
+                        bid_value = self.pricevaluemaker(sub)
+                        # comparing mentioned bid on website with the bid price by user
+                        if bid_value <= self.bid_price:
+                            # clicking on bid price
+                            self.biding()
+                            bid_price_is_greater = True
+                        else:
+                            bid_price_is_greater = False
+
                     else:
                         sub = self.browser.find_element(By.XPATH,'//div[@class="mainCurrency"]').text
                         print("This is sub in else: ", sub)
+                        # if currency is mentioned
                         if sub:
+                            # as we have currency, no need for while loop anymore
                             getting_value = 5
+                            # extracting price and converting to int
+                            bid_value = self.pricevaluemaker(sub)
+                            # comparing mentioned bid on website with the bid price by user
+                            if bid_value <= self.bid_price:
+                                # clicking on bid price
+                                self.biding()
+                                bid_price_is_greater = True
+                            else:
+                                bid_price_is_greater = False
+
+
                         getting_value = getting_value + 1
 
                 except:
                     getting_value = getting_value+1
+                    bid_value=0
+                    bid_price_is_greater = False
 
-            list_=list(sub)
-            print(sub, " snd list is " ,  list_ )
+
+
+            print( "bid value is : ", bid_value, "type is",type(bid_value))
             page=1
             title_ = self.browser.title
             print("found title is ", title_)
             if sub:
                 print('Auction has been started')
                 self.browser.quit()
-                return page, title_
+                return page, title_, bid_value, self.bid_price, bid_price_is_greater
             else:
                 print('Auction is not started ')
                 title_ = self.browser.title
                 page = 2
                 self.browser.quit()
-                return page, title_
+                return page, title_,bid_value, self.bid_price, bid_price_is_greater
 
 
         except:
@@ -191,26 +207,10 @@ class carbot():
             title_ = self.browser.title
             page=2
             self.browser.quit()
-            return page, title_
+            return page, title_, bid_value, self.bid_price, bid_price_is_greater
 
-    def biding(self):
-        # self.browser.find_element(By.XPATH, '//div[@class="bid button en noSelect"]').click()
-        # text_=self.browser.find_element(By.XPATH,'//div[@class="price text"]').text
-        # print('*'*100, text_)
 
-        # try_ = self.browser.execute_script('return document.getElementsByClassName("btn btn-primary ng-binding ng-scope")[0];')
-        # self.browser.execute_script('arguments[0].click()', try_)
-        self.browser.find_element(By.XPATH, "//button[contains(text(),'Live auction')]").click()
-        time.sleep(10)
-        c = self.browser.window_handles[1]
-        # switch to tab browser
-        self.browser.switch_to.window(c)
 
-        bid=self.browser.execute_script('return document.getElementsByClassName("bid button en noSelect")[0];')
-        self.browser.execute_script('arguments[0].click()', bid)
-
-        val = bid=self.browser.execute_script('return document.getElementsByClassName("bid button en noSelect")[0].textContent;')
-        print(val)
 
     def card_info(self):
         # CLICK TO PARTICIPATE

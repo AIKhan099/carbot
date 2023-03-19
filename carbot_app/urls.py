@@ -20,6 +20,6 @@ from . import views
 urlpatterns = [
     # path('admin/', admin.site.urls),
     path('', views.index, name='carbot'),
-    path('/form', views.formdata, name='form'),
-    path('/bot', views.cars , name='carbot fun' )
+    path('form', views.formdata, name='form'),
+    path('bot', views.cars, name='carbot fun')
 ]

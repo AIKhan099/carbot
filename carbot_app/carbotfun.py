@@ -104,14 +104,61 @@ class carbot():
             print("login procedure is executed")
         except:
             self.browser.quit()
+
+    def redirection_to_live(self):
+        try:
+            time.sleep(5)
+            print("in redirect to live now")
+            try:
+                print("2nd try")
+                live_auc= self.browser.execute_script('return document.getElementsByClassName("btn btn-primary");')
+                self.browser.execute_script('arguments[0].click()',live_auc)
+
+                time.sleep(10)
+                self.browser.switch_to_window(self.browser.window_handles[1])
+            except:
+                print("2nd try except")
+                # self.browser.get(By.XPATH,"/html/body/div[1]/div/div/div/div[3]/div/button[1]").click()
+                # self.browser.switch_to.frame(self.browser.find_element(By.XPATH, "/html/body/div[1]/div/div/div/div[3]/div/button[1]").click())
+                self.browser.find_element(By.XPATH, "/html/body/div[1]/div/div/div/div[3]/div/button[1]").click()
+                time.sleep(3)
+                self.browser.switch_to.window(self.browser.window_handles[1])
+                time.sleep(20)
+                # self.browser.switch_to.window(self.browser.window_handles[1])
+        except:
+            print("In exception of redirect")
+            # pass
+
+    def ID_check(self):
+        # try:
+        print("in the id  check")
+        time.sleep(5)
+        id1 = self.browser.find_element(By.XPATH,'(//div[@class="picContainer "]/div[@class="pic"])[2]')
+        print("String contains ID is: ", id1)
+        id2 = id1.get_attribute("style")
+        print("String contains ID is:", id2)
+        all_ids= self.browser.find_elements(By.XPATH,'//div[@class="item "]')
+        print("Here are all the ids", all_ids)
+        all_ids1=all_ids.get_attribute("itemid")
+
+        print("Here is all ids ", all_ids1)
+
+
+        if '17573' in str(id2):
+            print("Yes, it is in that.")
+
+        # except:
+        #     pass
     def desired_car_page(self):
         try:
             print("going to desired car page")
             # _, _, car_page = self.cred_all()
             car_page=self.link
             self.browser.get(car_page)
-            time.sleep(15)
+            time.sleep(20)
             print("on to desired car page")
+            self.redirection_to_live()
+            # self.ID_check()
         except:
             print("unable to reach desired car page")
             self.browser.quit()

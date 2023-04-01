@@ -9,8 +9,12 @@ from . import carbotfun
 # from django.http
 # Create your views here.
 def index(request):
+    if 'new-session' not in request.session:
+        request.session['new-session']=[]
+
     # return HttpResponse('This is the carbot application')
-    return render(request, 'forms.html')
+        return render(request, 'forms.html')
+    return HttpResponse("You are already in session")
 
 
 def cars(request):

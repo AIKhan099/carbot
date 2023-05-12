@@ -56,7 +56,8 @@ def formdata(request):
         hours = int(request.POST.get('hours'))
         minutes = int(request.POST.get('minutes'))
         bid_price = int(request.POST.get('bid-price'))
-
+        car_id = str(request.POST.get("car-id"))
+        print("-" * 100, "\n", type(car_id), car_id)
         session_id_list = SessionsIdLists(request)
         print('Session list is : ', session_id_list, 'total count of session id is : ',
               session_id_list.count(session_id))
@@ -94,7 +95,8 @@ def formdata(request):
                     res, title, bid_value, bid_price, bid_price_is_greater = carbotfun.carbot(email=email,
                                                                                               password=password_,
                                                                                               link=link_,
-                                                                                              bid_price=bid_price).findingtime()
+                                                                                              bid_price=bid_price,
+                                                                                              car_id=car_id).findingtime()
                     print("In formdata function, res is", res, "title is ", title)
 
                     if res == 2:
@@ -138,7 +140,8 @@ def formdata(request):
                         #     ' Bid Price by user: ' + str(bid_price) + ". That's why, bot is unable to participate")
                         bot_response = "Bid value is less than what you have suggested." + ' Bid Value : ' + str(
                             bid_value) + ' Bid Price by user: ' + str(
-                            bid_price) + ". That's why, bot is unable to participate"
+                            bid_price) + ". That's why, bot is unable to participate or bot remain unable to find the " \
+                                         "car for requested ID"
                         response = render(request, 'response.html', {'bot_response': bot_response})
                         request.session['email'] = 'empty'
                         print('session email : ', request.session['email'])
@@ -148,7 +151,7 @@ def formdata(request):
                         print('*' * 100, 'all data is : ', all_data2)
                         Session.objects.filter(session_id=session_id).delete()
                         return response
-                except:
+                except Exception as e:
                     # xx = carbotfun.carbot(email=email, password=password_, link=link_).findingtime()
                     request.session['email'] = 'empty'
                     # return HttpResponse('In except, Action has not been started for the requested page with title: ')
@@ -161,8 +164,8 @@ def formdata(request):
                     all_data2 = Session.objects.filter(session_id=session_id)
                     print('*' * 100, 'all data is : ', all_data2)
                     Session.objects.filter(session_id=session_id).delete()
-                    return response
-                # return HttpResponse('Hours and minutes are : '  )
+                    # return response
+                    return HttpResponse(str(e))
             else:
                 # bot_response = 'Session is already under process, wait untill the previous one is completed'
                 # response = render(request, 'response.html', {'bot_response': bot_response})

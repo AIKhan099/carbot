@@ -16,7 +16,7 @@ from django.templatetags.static import static
 from pathlib import Path
 from django.http.response import HttpResponse
 from . import views
-
+#latest
 
 class carbot():
     def __init__(self, email, password, link, bid_price, car_id):

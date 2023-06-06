@@ -97,6 +97,7 @@ def formdata(request):
                                                                                               link=link_,
                                                                                               bid_price=bid_price,
                                                                                               car_id=car_id).findingtime()
+
                     print("In formdata function, res is", res, "title is ", title)
 
                     if res == 2:
@@ -110,6 +111,7 @@ def formdata(request):
                         all_data2 = Session.objects.filter(session_id=session_id)
                         print('*' * 100, 'all data is : ', all_data2)
                         Session.objects.filter(session_id=session_id).delete()
+                        print(bot_response)
                         return response
 
                     elif bid_price_is_greater:
@@ -131,6 +133,7 @@ def formdata(request):
                         all_data2 = Session.objects.filter(session_id=session_id)
                         print('*' * 100, 'all data is : ', all_data2)
                         Session.objects.filter(session_id=session_id).delete()
+                        print(bot_response)
                         return response
 
                     else:
@@ -150,6 +153,7 @@ def formdata(request):
                         all_data2 = Session.objects.filter(session_id=session_id)
                         print('*' * 100, 'all data is : ', all_data2)
                         Session.objects.filter(session_id=session_id).delete()
+                        print(bot_response)
                         return response
                 except Exception as e:
                     # xx = carbotfun.carbot(email=email, password=password_, link=link_).findingtime()
@@ -164,6 +168,7 @@ def formdata(request):
                     all_data2 = Session.objects.filter(session_id=session_id)
                     print('*' * 100, 'all data is : ', all_data2)
                     Session.objects.filter(session_id=session_id).delete()
+                    print(bot_response)
                     # return response
                     return HttpResponse(str(e))
             else:
@@ -175,5 +180,6 @@ def formdata(request):
             request.session['email'] = 'empty'
             # return HttpResponse("First time")
             bot_response = 'This is the First Time you are at Car Bot. Kindly, go back and click submit again. '
+            print(bot_response)
             response = render(request, 'response.html', {'bot_response': bot_response})
             return response
